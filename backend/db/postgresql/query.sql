@@ -37,8 +37,12 @@ WHERE id = $4
 RETURNING id, name, description, due_date;
 ;
 
+-- name: SetTaskDone :one
+UPDATE tasks SET is_done = true WHERE id = $1 RETURNING id, name, description, due_date;
+
 -- name: DeleteTask :one
 DELETE
 FROM tasks
 WHERE id = $1
 RETURNING id;
+

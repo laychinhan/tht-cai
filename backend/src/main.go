@@ -49,6 +49,7 @@ func main() {
 	r.Get("/", serviceHandler.getTasks)
 	r.Post("/", serviceHandler.createTask)
 	r.Delete("/{id}", serviceHandler.deleteTask)
+	r.Put("/{id}", serviceHandler.updateTask)
 	http.ListenAndServe(":3000", r)
 }
 
@@ -177,4 +178,42 @@ func (ServiceHandler *ServiceHandler) deleteTask(w http.ResponseWriter, r *http.
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(deletedTaskId)
+}
+
+func (ServiceHandler *ServiceHandler) updateTask(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 32)
+	if err != nil {
+		w.WriteHeader(400)
+		w.Write([]byte(fmt.Sprintf("error parsing task id %v", err)))
+		return
+	}
+
+	var task checkbox_tht.UpdateTaskParams
+	err = json.NewDecoder(r.Body).Decode(&task)
+	task.ID = int32(id)
+
+	if err != nil {
+		w.WriteHeader(400)
+		w.Write([]byte(fmt.Sprintf("error decoding task %v", err)))
+		return
+	}
+
+	queries := checkbox_tht.New(ServiceHandler.conn)
+
+	updatedTask, err := queries.UpdateTask(ServiceHandler.ctx, task)
+	if err != nil {
+		w.WriteHeader(400)
+		w.Write([]byte(fmt.Sprintf("error updating task %v", err)))
+		return
+	}
+
+	jsonTasks, err := json.Marshal(updatedTask)
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(fmt.Sprintf("error marshaling tasks to JSON %v", err)))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonTasks)
 }
