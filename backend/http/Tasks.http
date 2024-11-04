@@ -1,0 +1,14 @@
+### GET request paginated tasks
+GET http://localhost:3000
+
+### POST create a task
+POST http://localhost:3000
+Content-Type: application/json
+
+{
+    "name": "Buying office supplies before stopping at office",
+    "description": "Description 2",
+    "due_date": "2021-12-31T10:00:00Z"
+}
+
+###
