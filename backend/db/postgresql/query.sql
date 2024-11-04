@@ -25,7 +25,7 @@ LIMIT $2 OFFSET $3;
 
 -- name: CreateTask :one
 INSERT INTO tasks (name, description, due_date)
-VALUES($1, $2, $3)
+VALUES ($1, $2, $3)
 RETURNING id, name, description, due_date;
 
 -- name: UpdateTask :one
@@ -37,8 +37,11 @@ WHERE id = $4
 RETURNING id, name, description, due_date;
 ;
 
--- name: SetTaskDone :one
-UPDATE tasks SET is_done = true WHERE id = $1 RETURNING id, name, description, due_date;
+-- name: ToggleTaskDone :one
+UPDATE tasks
+SET is_done = CASE WHEN is_done IS NULL THEN CURRENT_TIMESTAMP ELSE NULL END
+WHERE id = $1
+RETURNING id, name, description, due_date, is_done;
 
 -- name: DeleteTask :one
 DELETE

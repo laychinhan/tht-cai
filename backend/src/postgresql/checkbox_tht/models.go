@@ -14,4 +14,6 @@ type Task struct {
 	Description string             `json:"description"`
 	NameSearch  interface{}        `json:"name_search"`
 	DueDate     pgtype.Timestamptz `json:"due_date"`
+	IsDone      pgtype.Timestamptz `json:"is_done"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 }

@@ -21,5 +21,8 @@ Content-Type: application/json
   "due_date": "2021-12-31T10:00:00Z"
 }
 
+### POST set task as done
+POST http://localhost:3000/36/toggle
+
 ### DELETE remove a task
 DELETE http://localhost:3000/44

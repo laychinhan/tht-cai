@@ -13,7 +13,7 @@ import (
 
 const createTask = `-- name: CreateTask :one
 INSERT INTO tasks (name, description, due_date)
-VALUES($1, $2, $3)
+VALUES ($1, $2, $3)
 RETURNING id, name, description, due_date
 `
 
@@ -164,6 +164,34 @@ func (q *Queries) GetPagedTasksByName(ctx context.Context, arg GetPagedTasksByNa
 		return nil, err
 	}
 	return items, nil
+}
+
+const toggleTaskDone = `-- name: ToggleTaskDone :one
+UPDATE tasks
+SET is_done = CASE WHEN is_done IS NULL THEN CURRENT_TIMESTAMP ELSE NULL END
+WHERE id = $1
+RETURNING id, name, description, due_date, is_done
+`
+
+type ToggleTaskDoneRow struct {
+	ID          int32              `json:"id"`
+	Name        string             `json:"name"`
+	Description string             `json:"description"`
+	DueDate     pgtype.Timestamptz `json:"due_date"`
+	IsDone      pgtype.Timestamptz `json:"is_done"`
+}
+
+func (q *Queries) ToggleTaskDone(ctx context.Context, id int32) (ToggleTaskDoneRow, error) {
+	row := q.db.QueryRow(ctx, toggleTaskDone, id)
+	var i ToggleTaskDoneRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.DueDate,
+		&i.IsDone,
+	)
+	return i, err
 }
 
 const updateTask = `-- name: UpdateTask :one

@@ -50,6 +50,7 @@ func main() {
 	r.Post("/", serviceHandler.createTask)
 	r.Delete("/{id}", serviceHandler.deleteTask)
 	r.Put("/{id}", serviceHandler.updateTask)
+	r.Post("/{id}/toggle", serviceHandler.toggleTaskDone)
 	http.ListenAndServe(":3000", r)
 }
 
@@ -216,4 +217,32 @@ func (ServiceHandler *ServiceHandler) updateTask(w http.ResponseWriter, r *http.
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(jsonTasks)
+}
+
+func (ServiceHandler *ServiceHandler) toggleTaskDone(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 32)
+	if err != nil {
+		w.WriteHeader(400)
+		w.Write([]byte(fmt.Sprintf("error parsing task id %v", err)))
+		return
+	}
+
+	queries := checkbox_tht.New(ServiceHandler.conn)
+
+	doneTask, err := queries.ToggleTaskDone(ServiceHandler.ctx, int32(id))
+	if err != nil {
+		w.WriteHeader(400)
+		w.Write([]byte(fmt.Sprintf("error setting task done %v", err)))
+		return
+	}
+
+	jsonDoneTask, err := json.Marshal(doneTask)
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(fmt.Sprintf("error marshaling done tasks to JSON %v", err)))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonDoneTask)
 }
