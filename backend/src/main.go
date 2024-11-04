@@ -48,6 +48,7 @@ func main() {
 
 	r.Get("/", serviceHandler.getTasks)
 	r.Post("/", serviceHandler.createTask)
+	r.Delete("/{id}", serviceHandler.deleteTask)
 	http.ListenAndServe(":3000", r)
 }
 
@@ -124,12 +125,56 @@ func (serviceHandler *ServiceHandler) createTask(w http.ResponseWriter, r *http.
 
 	queries := checkbox_tht.New(serviceHandler.conn)
 
-	_, err = queries.CreateTask(serviceHandler.ctx, task)
+	createdTask, err := queries.CreateTask(serviceHandler.ctx, task)
 	if err != nil {
 		w.WriteHeader(400)
 		w.Write([]byte(fmt.Sprintf("error creating task %v", err)))
 		return
 	}
 
-	w.WriteHeader(201)
+	jsonTasks, err := json.Marshal(createdTask)
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(fmt.Sprintf("error marshaling tasks to JSON %v", err)))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonTasks)
+}
+
+func (ServiceHandler *ServiceHandler) deleteTask(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 32)
+	if err != nil {
+		w.WriteHeader(400)
+		w.Write([]byte(fmt.Sprintf("error parsing task id %v", err)))
+		return
+	}
+
+	queries := checkbox_tht.New(ServiceHandler.conn)
+
+	deletedId, err := queries.DeleteTask(ServiceHandler.ctx, int32(id))
+	if err != nil {
+		w.WriteHeader(400)
+		w.Write([]byte(fmt.Sprintf("error deleting task %v", err)))
+		return
+	}
+
+	type deletedTaskResponse struct {
+		Id int32 `json:"id"`
+	}
+
+	response := &deletedTaskResponse{
+		Id: deletedId,
+	}
+
+	deletedTaskId, err := json.Marshal(response)
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(fmt.Sprintf("error marshaling tasks to JSON %v", err)))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(deletedTaskId)
 }

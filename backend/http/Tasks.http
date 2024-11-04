@@ -11,4 +11,5 @@ Content-Type: application/json
     "due_date": "2021-12-31T10:00:00Z"
 }
 
-###
+### DELETE remove a task
+DELETE http://localhost:3000/44
