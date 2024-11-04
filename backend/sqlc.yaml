@@ -1,0 +1,11 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "db/postgresql/query.sql"
+    schema: "db/postgresql/schema.sql"
+    gen:
+      go:
+        package: "checkbox_tht"
+        out: "src/postgresql/checkbox_tht"
+        sql_package: "pgx/v5"
+        emit_json_tags: true

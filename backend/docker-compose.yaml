@@ -1,0 +1,16 @@
+version: "1.0"
+
+services:
+  postgres:
+    image: postgres:16.1
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=checkbox_tht
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
