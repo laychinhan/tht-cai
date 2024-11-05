@@ -1,8 +1,8 @@
 ### GET request paginated tasks
-GET http://localhost:3000
+GET http://localhost:3003/?unchecked=true&page=1&limit=10&sort=name&order=asc
 
 ### POST create a task
-POST http://localhost:3000
+POST http://localhost:3003
 Content-Type: application/json
 
 {
@@ -12,7 +12,7 @@ Content-Type: application/json
 }
 
 ### PUT update a task
-PUT http://localhost:3000/36
+PUT http://localhost:3003/36
 Content-Type: application/json
 
 {
@@ -22,7 +22,7 @@ Content-Type: application/json
 }
 
 ### POST set task as done
-POST http://localhost:3000/36/toggle
+POST http://localhost:3003/36/toggle
 
 ### DELETE remove a task
-DELETE http://localhost:3000/44
+DELETE http://localhost:3003/44

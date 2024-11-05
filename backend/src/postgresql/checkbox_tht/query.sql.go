@@ -56,9 +56,9 @@ func (q *Queries) DeleteTask(ctx context.Context, id int32) (int32, error) {
 }
 
 const getPagedTasks = `-- name: GetPagedTasks :many
-SELECT id, name, description, due_date
+SELECT id, name, description, due_date, is_done
 FROM tasks
-WHERE ((CASE WHEN $3::boolean THEN true ELSE false END) AND (is_done IS NULL))
+WHERE ((CASE WHEN $3::boolean THEN is_done is NULL ELSE (is_done is NULL or is_done is Not null) END))
 ORDER BY CASE
              WHEN NOT $4::boolean AND $5::text = 'due_date' THEN due_date
              END ASC,
@@ -87,6 +87,7 @@ type GetPagedTasksRow struct {
 	Name        string             `json:"name"`
 	Description string             `json:"description"`
 	DueDate     pgtype.Timestamptz `json:"due_date"`
+	IsDone      pgtype.Timestamptz `json:"is_done"`
 }
 
 func (q *Queries) GetPagedTasks(ctx context.Context, arg GetPagedTasksParams) ([]GetPagedTasksRow, error) {
@@ -109,6 +110,7 @@ func (q *Queries) GetPagedTasks(ctx context.Context, arg GetPagedTasksParams) ([
 			&i.Name,
 			&i.Description,
 			&i.DueDate,
+			&i.IsDone,
 		); err != nil {
 			return nil, err
 		}

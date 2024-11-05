@@ -42,16 +42,15 @@ func main() {
 		return
 	}
 
-	defer conn.Close(ctx)
-
 	serviceHandler := &ServiceHandler{conn: conn, ctx: ctx}
+	defer serviceHandler.conn.Close(ctx)
 
 	r.Get("/", serviceHandler.getTasks)
 	r.Post("/", serviceHandler.createTask)
 	r.Delete("/{id}", serviceHandler.deleteTask)
 	r.Put("/{id}", serviceHandler.updateTask)
 	r.Post("/{id}/toggle", serviceHandler.toggleTaskDone)
-	http.ListenAndServe(":3000", r)
+	http.ListenAndServe(":3003", r)
 }
 
 func (serviceHandler *ServiceHandler) getTasks(w http.ResponseWriter, r *http.Request) {
@@ -72,10 +71,10 @@ func (serviceHandler *ServiceHandler) getTasks(w http.ResponseWriter, r *http.Re
 		page = 1
 	}
 
-	log.Printf("page: %d, sort: %v, order: %s", page, sortParam, orderParam)
+	log.Printf("page: %d, sort: %v, order: %s, offset: %d", page, sortParam, orderParam, int32((page-1)*10))
 
 	tasks, err := queries.GetPagedTasks(serviceHandler.ctx, checkbox_tht.GetPagedTasksParams{
-		Limit:     5,
+		Limit:     10,
 		Offset:    int32((page - 1) * 10),
 		Reverse:   sortParam,
 		OrderBy:   orderParam,
