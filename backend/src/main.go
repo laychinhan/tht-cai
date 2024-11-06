@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"herman/tht-cai/src/postgresql/checkbox_tht"
 	"log"
 	"net/http"
@@ -19,7 +19,7 @@ import (
 const ConnectionString = "postgres://postgres:123@localhost:5432/checkbox_tht?sslmode=disable"
 
 type ServiceHandler struct {
-	conn *pgx.Conn
+	conn *pgxpool.Pool
 	ctx  context.Context
 }
 
@@ -33,17 +33,17 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, ConnectionString)
+	conn, err := pgxpool.New(ctx, ConnectionString)
+	defer conn.Close()
 
 	if err != nil {
-		log.Fatalf("Unable to connect to database: %v\n", err)
 		w := http.ResponseWriter(nil)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		log.Fatalf("Unable to connect to database: %v\n", err)
 		return
 	}
 
 	serviceHandler := &ServiceHandler{conn: conn, ctx: ctx}
-	defer serviceHandler.conn.Close(ctx)
 
 	r.Get("/", serviceHandler.getTasks)
 	r.Post("/", serviceHandler.createTask)
@@ -58,7 +58,7 @@ func (serviceHandler *ServiceHandler) getTasks(w http.ResponseWriter, r *http.Re
 	queries := checkbox_tht.New(serviceHandler.conn)
 
 	pageParam := r.URL.Query().Get("page")
-	sortParam := r.URL.Query().Get("sort") == "desc"
+	sortParam := r.URL.Query().Get("sort") != "asc"
 	orderParam := r.URL.Query().Get("order")
 	unchecked := r.URL.Query().Get("unchecked") == "true"
 
