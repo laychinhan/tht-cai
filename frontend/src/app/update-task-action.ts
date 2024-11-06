@@ -6,6 +6,7 @@ import ky from "ky";
 
 // This schema is used to validate input from client.
 const schema = z.object({
+  id: z.number().min(1),
   name: z.string().min(3).max(100),
   description: z.string().min(3).max(250),
   due_date: z.string().datetime({ offset: true }),
@@ -13,10 +14,10 @@ const schema = z.object({
 
 export const createTask = actionClient
   .schema(schema)
-  .action(async ({ parsedInput: { name, description, due_date } }) => {
+  .action(async ({ parsedInput: { id, name, description, due_date } }) => {
     try {
       const resp = await ky
-        .post("http://localhost:3003", {
+        .put(`http://localhost:3003/${id}`, {
           json: { name, description, due_date },
         })
         .json();
@@ -26,5 +27,5 @@ export const createTask = actionClient
       return { failure: e instanceof Error ? e.message : String(e) };
     }
 
-    return { failure: "Unable to add new task" };
+    return { failure: `Unable to update task ${name}` };
   });

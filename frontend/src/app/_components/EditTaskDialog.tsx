@@ -21,24 +21,29 @@ import {
   flattenValidationErrors,
   InferSafeActionFnResult,
 } from "next-safe-action";
-import { CircleAlert } from "lucide-react";
+import { CircleAlert, Edit } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { ITask } from "@/app/_components/task";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 type inferredTestActionResult = InferSafeActionFnResult<typeof createTask>;
 
-export default function CreateTaskDialog({
+export default function EditTaskDialog({
   onClosed,
+  task,
 }: {
   onClosed?: () => void;
+  task: ITask;
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [taskName, setTaskName] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [dueDate, setDueDate] = useState<string>(dayjs().tz().toString());
+  const [taskName, setTaskName] = useState<string>(task.name);
+  const [description, setDescription] = useState<string>(task.description);
+  const [dueDate, setDueDate] = useState<string>(
+    dayjs(task.due_date).tz().toString(),
+  );
   const [errors, setErrors] = useState<
     inferredTestActionResult["validationErrors"] | null
   >(null);
@@ -59,7 +64,14 @@ export default function CreateTaskDialog({
       }}
     >
       <div className="mb-4">
-        <Button onClick={() => setIsDialogOpen(true)}>Add New Task</Button>
+        <Button
+          onClick={() => setIsDialogOpen(true)}
+          variant="outline"
+          size="sm"
+        >
+          <Edit className="h-4 w-4" />
+          Edit
+        </Button>
       </div>
       <DialogContent>
         <DialogHeader>
@@ -82,17 +94,19 @@ export default function CreateTaskDialog({
           )}
           <div className="grid grid-cols-1 gap-y-1">
             <Input
+              defaultValue={task.name}
               onChange={(e) => setTaskName(e.target.value)}
               type="text"
               placeholder="Enter task name (min of 3 characters, max 100 characters)."
             />
             <Textarea
+              defaultValue={task.description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Type task description here (min of 3 characters, max 250 characters)."
             />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimeField
-                defaultValue={dayjs().tz()}
+                defaultValue={dayjs(task.due_date).tz()}
                 onChange={(value) => {
                   if (value) {
                     setDueDate(value.toString());
