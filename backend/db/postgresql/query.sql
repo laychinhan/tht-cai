@@ -16,6 +16,9 @@ ORDER BY CASE
              END DESC
 LIMIT $1 OFFSET $2;
 
+-- name: GetTotalTasks :one
+SELECT COUNT(*) AS total from tasks;
+
 -- name: GetPagedTasksByName :many
 SELECT id, name, description, due_date
 FROM tasks

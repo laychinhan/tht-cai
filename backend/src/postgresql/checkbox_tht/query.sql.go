@@ -170,6 +170,17 @@ func (q *Queries) GetPagedTasksByName(ctx context.Context, arg GetPagedTasksByNa
 	return items, nil
 }
 
+const getTotalTasks = `-- name: GetTotalTasks :one
+SELECT COUNT(*) AS total from tasks
+`
+
+func (q *Queries) GetTotalTasks(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, getTotalTasks)
+	var total int64
+	err := row.Scan(&total)
+	return total, err
+}
+
 const toggleTaskDone = `-- name: ToggleTaskDone :one
 UPDATE tasks
 SET is_done = CASE WHEN is_done IS NULL THEN CURRENT_TIMESTAMP ELSE NULL END

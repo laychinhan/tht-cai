@@ -29,6 +29,11 @@ type CreateTaskRequest struct {
 	DueDate     pgtype.Timestamptz `json:"due_date" validate:"required"`
 }
 
+type PaginatedTasksResponse struct {
+	Tasks      []checkbox_tht.GetPagedTasksRow `json:"tasks"`
+	TotalPages int64                           `json:"total_pages"`
+}
+
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -87,7 +92,9 @@ func (serviceHandler *ServiceHandler) getTasks(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	jsonTasks, err := json.Marshal(tasks)
+	totalPages, err := queries.GetTotalTasks(serviceHandler.ctx)
+
+	jsonTasks, err := json.Marshal(PaginatedTasksResponse{Tasks: tasks, TotalPages: totalPages})
 	if err != nil {
 		w.WriteHeader(500)
 		w.Write([]byte(fmt.Sprintf("error marshaling tasks to JSON %v", err)))

@@ -6,3 +6,8 @@ export interface ITask {
   is_done: string;
   created_at: string;
 }
+
+export interface PaginatedTasks {
+  tasks: ITask[];
+  total_pages: number;
+}
