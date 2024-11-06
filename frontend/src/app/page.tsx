@@ -4,12 +4,12 @@ import TaskList from "@/app/_components/TaskList";
 export default async function Home({
   searchParams,
 }: {
-  searchParams?: {
+  searchParams?: Promise<{
     page?: string;
     sort?: string;
     order?: string;
     search?: string;
-  };
+  }>;
 }) {
   const params = await searchParams;
   const tasksResponse = await fetch(
