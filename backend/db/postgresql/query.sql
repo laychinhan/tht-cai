@@ -1,5 +1,5 @@
 -- name: GetPagedTasks :many
-SELECT id, name, description, due_date, is_done
+SELECT id, name, description, due_date, is_done, created_at
 FROM tasks
 WHERE ((CASE WHEN @unchecked::boolean THEN is_done is NULL ELSE (is_done is NULL or is_done is Not null) END))
 ORDER BY CASE
