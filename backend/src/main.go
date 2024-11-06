@@ -92,7 +92,10 @@ func (serviceHandler *ServiceHandler) getTasks(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	totalPages, err := queries.GetTotalTasks(serviceHandler.ctx)
+	totalPages, err := queries.GetTotalTasks(serviceHandler.ctx, checkbox_tht.GetTotalTasksParams{
+		Search:    searchParam,
+		Unchecked: unchecked,
+	})
 
 	jsonTasks, err := json.Marshal(PaginatedTasksResponse{Tasks: tasks, TotalPages: totalPages})
 	if err != nil {

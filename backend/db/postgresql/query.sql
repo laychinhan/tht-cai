@@ -20,7 +20,11 @@ ORDER BY CASE
 LIMIT $1 OFFSET $2;
 
 -- name: GetTotalTasks :one
-SELECT COUNT(*) AS total from tasks;
+SELECT COUNT(*) AS total from tasks
+WHERE (
+          (CASE WHEN @unchecked::boolean THEN is_done is NULL ELSE (is_done is NULL or is_done is Not null) END)
+              AND (CASE WHEN @search::text = '' THEN true ELSE name_search @@ to_tsquery('english', @search) END)
+          );
 
 -- name: GetPagedTasksByName :many
 SELECT id, name, description, due_date

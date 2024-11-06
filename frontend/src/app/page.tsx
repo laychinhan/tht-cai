@@ -4,11 +4,16 @@ import TaskList from "@/app/_components/TaskList";
 export default async function Home({
   searchParams,
 }: {
-  searchParams?: { page?: string; sort?: string; order?: string };
+  searchParams?: {
+    page?: string;
+    sort?: string;
+    order?: string;
+    search?: string;
+  };
 }) {
   const params = await searchParams;
   const tasksResponse = await fetch(
-    `http://localhost:3003?page=${params?.page ?? 1}&sort=${params?.sort ?? "desc"}&order=${params?.order ?? "id"}`,
+    `http://localhost:3003?page=${params?.page ?? 1}&sort=${params?.sort ?? "desc"}&order=${params?.order ?? "id"}&search=${params?.search ?? ""}`,
   );
   const currentPage = !!params?.page ? parseInt(params.page) : 1;
   const tasksResponseJson: PaginatedTasks = await tasksResponse.json();
@@ -23,6 +28,7 @@ export default async function Home({
         currentPage={currentPage}
         sort={params?.sort ?? "asc"}
         order={params?.order ?? "id"}
+        searchWord={params?.search ?? ""}
       />
     </div>
   );

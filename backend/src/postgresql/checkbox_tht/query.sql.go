@@ -177,10 +177,19 @@ func (q *Queries) GetPagedTasksByName(ctx context.Context, arg GetPagedTasksByNa
 
 const getTotalTasks = `-- name: GetTotalTasks :one
 SELECT COUNT(*) AS total from tasks
+WHERE (
+          (CASE WHEN $1::boolean THEN is_done is NULL ELSE (is_done is NULL or is_done is Not null) END)
+              AND (CASE WHEN $2::text = '' THEN true ELSE name_search @@ to_tsquery('english', $2) END)
+          )
 `
 
-func (q *Queries) GetTotalTasks(ctx context.Context) (int64, error) {
-	row := q.db.QueryRow(ctx, getTotalTasks)
+type GetTotalTasksParams struct {
+	Unchecked bool   `json:"unchecked"`
+	Search    string `json:"search"`
+}
+
+func (q *Queries) GetTotalTasks(ctx context.Context, arg GetTotalTasksParams) (int64, error) {
+	row := q.db.QueryRow(ctx, getTotalTasks, arg.Unchecked, arg.Search)
 	var total int64
 	err := row.Scan(&total)
 	return total, err
