@@ -58,18 +58,21 @@ func (q *Queries) DeleteTask(ctx context.Context, id int32) (int32, error) {
 const getPagedTasks = `-- name: GetPagedTasks :many
 SELECT id, name, description, due_date, is_done, created_at
 FROM tasks
-WHERE ((CASE WHEN $3::boolean THEN is_done is NULL ELSE (is_done is NULL or is_done is Not null) END))
+WHERE (
+    (CASE WHEN $3::boolean THEN is_done is NULL ELSE (is_done is NULL or is_done is Not null) END)
+    AND (CASE WHEN $4::text = '' THEN true ELSE name_search @@ to_tsquery('english', $4) END)
+    )
 ORDER BY CASE
-             WHEN NOT $4::boolean AND $5::text = 'due_date' THEN due_date
+             WHEN NOT $5::boolean AND $6::text = 'due_date' THEN due_date
              END ASC,
          CASE
-             WHEN NOT $4::boolean AND $5::text = 'id' THEN id
+             WHEN NOT $5::boolean AND $6::text = 'id' THEN id
              END ASC,
          CASE
-             WHEN $4::boolean AND $5::text = 'due_date' THEN due_date
+             WHEN $5::boolean AND $6::text = 'due_date' THEN due_date
              END DESC,
          CASE
-             WHEN $4::boolean AND $5::text = 'id' THEN id
+             WHEN $5::boolean AND $6::text = 'id' THEN id
              END DESC
 LIMIT $1 OFFSET $2
 `
@@ -78,6 +81,7 @@ type GetPagedTasksParams struct {
 	Limit     int32  `json:"limit"`
 	Offset    int32  `json:"offset"`
 	Unchecked bool   `json:"unchecked"`
+	Search    string `json:"search"`
 	Reverse   bool   `json:"reverse"`
 	OrderBy   string `json:"order_by"`
 }
@@ -96,6 +100,7 @@ func (q *Queries) GetPagedTasks(ctx context.Context, arg GetPagedTasksParams) ([
 		arg.Limit,
 		arg.Offset,
 		arg.Unchecked,
+		arg.Search,
 		arg.Reverse,
 		arg.OrderBy,
 	)

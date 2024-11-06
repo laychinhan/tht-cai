@@ -66,6 +66,7 @@ func (serviceHandler *ServiceHandler) getTasks(w http.ResponseWriter, r *http.Re
 	sortParam := r.URL.Query().Get("sort") != "asc"
 	orderParam := r.URL.Query().Get("order")
 	unchecked := r.URL.Query().Get("unchecked") == "true"
+	searchParam := r.URL.Query().Get("search")
 
 	if orderParam != "due_date" {
 		orderParam = "id"
@@ -76,13 +77,12 @@ func (serviceHandler *ServiceHandler) getTasks(w http.ResponseWriter, r *http.Re
 		page = 1
 	}
 
-	log.Printf("page: %d, sort: %v, order: %s, offset: %d", page, sortParam, orderParam, int32((page-1)*10))
-
 	tasks, err := queries.GetPagedTasks(serviceHandler.ctx, checkbox_tht.GetPagedTasksParams{
 		Limit:     10,
 		Offset:    int32((page - 1) * 10),
 		Reverse:   sortParam,
 		OrderBy:   orderParam,
+		Search:    searchParam,
 		Unchecked: unchecked,
 	})
 

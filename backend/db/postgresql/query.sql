@@ -1,7 +1,10 @@
 -- name: GetPagedTasks :many
 SELECT id, name, description, due_date, is_done, created_at
 FROM tasks
-WHERE ((CASE WHEN @unchecked::boolean THEN is_done is NULL ELSE (is_done is NULL or is_done is Not null) END))
+WHERE (
+    (CASE WHEN @unchecked::boolean THEN is_done is NULL ELSE (is_done is NULL or is_done is Not null) END)
+    AND (CASE WHEN @search::text = '' THEN true ELSE name_search @@ to_tsquery('english', @search) END)
+    )
 ORDER BY CASE
              WHEN NOT @reverse::boolean AND @order_by::text = 'due_date' THEN due_date
              END ASC,
