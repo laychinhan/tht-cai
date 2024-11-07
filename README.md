@@ -209,7 +209,7 @@ As to improve the performance of the application, the list of the tasks is pagin
 - Refactor the Golang code by separating the route handler and extracting the model into different files.
 - Extracting variables and secrets (i.e. database url, backend API URL) into the environment variables and .env file.
 - Add unit tests to the Golang code.
-- Dockerize the Golang and Next.js application.
+- ~~Dockerize the Golang~~ Dockerize the Next.js application.
 - Better error handling in the Golang code and the Next.js backend code.
 - Since it will be trivial to test the next.js parts (react server components), implement playwright for e2e testing would be the ideal solution.
 - Implement the `is_done` feature.
