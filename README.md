@@ -2,6 +2,7 @@
 Simple task management written in golang and next.js
 
 # Installations
+
 ## Repository
 Git clone the repository into your local machine.
 As prerequisite, make sure that you have yarn and golang installed on your local machine.
@@ -24,10 +25,29 @@ yarn build && yarn start
 The next.js application will be running on `localhost:3000`
 
 ## Backend
+### Using docker compose
+Just run
+```bash
+docker-compose up -d
+```
+skip the Manual Installations part below, and go to the Migrations part.
+You can try access the API by accessing `http://localhost:3003` on your browser.
+
+It should show something like this after the migrations ran:
+```json
+{
+  "tasks": null,
+  "count": 0
+}
+```
+### Manual Installations
+#### Compiling golang
 Change your active directory to the `backend/src` folder and run the following command:
 ```bash
 go build -o ../bin/task-management
 ```
+*Important* If you run your database directly from your machine or somewhere other than the docker compose file, make sure to set the connection URL in the main.go file.
+
 run the server by running the following command if you are on linux or mac:
 ```bash
 ../bin/task-management
@@ -36,14 +56,14 @@ or if you are on windows, run the following command:
 ```bash
 ..\bin\task-management.exe
 ```
-## Database
-### Installations
+#### Database
 If you have docker installed on your machine, you can run the docker-compose file to run the postgres database.
 ```bash
 docker-compose up -d
 ```
 Or you can run the postgres database on your local machine and create a database named `checkbox_tht` and create a user with the following credentials:
 `postgres:123` and grant all the privileges of the database to the user.
+
 ### Migrations
 Run the following command to run the migrations:
 First, set the environment variable `POSTGRESQL_URL` to the postgres database url.
@@ -54,6 +74,62 @@ export POSTGRESQL_URL='postgres://postgres:123@localhost:5432/checkbox_tht?sslmo
 migrate -database ${POSTGRESQL_URL} -path db/migrations up
 ```
 The migrations should create a table named `tasks` on the `checkbox_tht` database.
+
+### Dummy data for initial seed
+```sql
+INSERT INTO tasks (name, description, due_date)
+VALUES
+    ('Buy Groceries', 'Purchase milk, eggs, and bread from the supermarket', '2023-10-01T10:00:00Z'),
+    ('Finish Report', 'Complete the quarterly financial report for the company', '2023-10-02T11:00:00Z'),
+    ('Doctor Appointment', 'Visit Dr. Smith for the annual check-up', '2023-10-03T12:00:00Z'),
+    ('Team Meeting', 'Attend the project status meeting with the team', '2023-10-04T13:00:00Z'),
+    ('Workout', 'Go to the gym for a workout session', '2023-10-05T14:00:00Z'),
+    ('Read Book', 'Read the new novel by your favorite author', '2023-10-06T15:00:00Z'),
+    ('Call Parents', 'Have a phone call with your parents', '2023-10-07T16:00:00Z'),
+    ('Plan Vacation', 'Plan the itinerary for the upcoming vacation', '2023-10-08T17:00:00Z'),
+    ('Pay Bills', 'Pay the monthly utility and credit card bills', '2023-10-09T18:00:00Z'),
+    ('Clean House', 'Do a thorough cleaning of the house', '2023-10-10T19:00:00Z'),
+    ('Grocery Shopping', 'Buy groceries for the week', '2023-10-11T10:00:00Z'),
+    ('Prepare Presentation', 'Prepare slides for the upcoming presentation', '2023-10-12T11:00:00Z'),
+    ('Visit Dentist', 'Go for a dental check-up', '2023-10-13T12:00:00Z'),
+    ('Client Meeting', 'Meet with the client to discuss project details', '2023-10-14T13:00:00Z'),
+    ('Yoga Class', 'Attend a yoga class at the local studio', '2023-10-15T14:00:00Z'),
+    ('Write Blog Post', 'Write a new post for your blog', '2023-10-16T15:00:00Z'),
+    ('Update Resume', 'Update your resume with recent job experiences', '2023-10-17T16:00:00Z'),
+    ('Car Maintenance', 'Take the car for regular maintenance', '2023-10-18T17:00:00Z'),
+    ('Team Lunch', 'Have lunch with the team at a nearby restaurant', '2023-10-19T18:00:00Z'),
+    ('Watch Movie', 'Watch the latest movie release', '2023-10-20T19:00:00Z'),
+    ('Attend Webinar', 'Attend an online webinar on industry trends', '2023-10-21T10:00:00Z'),
+    ('Organize Files', 'Organize files and documents on your computer', '2023-10-22T11:00:00Z'),
+    ('Volunteer Work', 'Participate in a community volunteer event', '2023-10-23T12:00:00Z'),
+    ('Family Dinner', 'Have dinner with family at home', '2023-10-24T13:00:00Z'),
+    ('Meditation', 'Spend time meditating and relaxing', '2023-10-25T14:00:00Z'),
+    ('Project Deadline', 'Submit the project by the deadline', '2023-10-26T15:00:00Z'),
+    ('Grocery Shopping', 'Buy groceries for the week', '2023-10-27T16:00:00Z'),
+    ('Prepare Presentation', 'Prepare slides for the upcoming presentation', '2023-10-28T17:00:00Z'),
+    ('Visit Dentist', 'Go for a dental check-up', '2023-10-29T18:00:00Z'),
+    ('Client Meeting', 'Meet with the client to discuss project details', '2023-10-30T19:00:00Z'),
+    ('Yoga Class', 'Attend a yoga class at the local studio', '2023-10-31T10:00:00Z'),
+    ('Write Blog Post', 'Write a new post for your blog', '2023-11-01T11:00:00Z'),
+    ('Update Resume', 'Update your resume with recent job experiences', '2023-11-02T12:00:00Z'),
+    ('Car Maintenance', 'Take the car for regular maintenance', '2023-11-03T13:00:00Z'),
+    ('Team Lunch', 'Have lunch with the team at a nearby restaurant', '2023-11-04T14:00:00Z'),
+    ('Watch Movie', 'Watch the latest movie release', '2023-11-05T15:00:00Z'),
+    ('Attend Webinar', 'Attend an online webinar on industry trends', '2023-11-06T16:00:00Z'),
+    ('Organize Files', 'Organize files and documents on your computer', '2023-11-07T17:00:00Z'),
+    ('Volunteer Work', 'Participate in a community volunteer event', '2023-11-08T18:00:00Z'),
+    ('Family Dinner', 'Have dinner with family at home', '2023-11-09T19:00:00Z'),
+    ('Meditation', 'Spend time meditating and relaxing', '2023-11-10T10:00:00Z'),
+    ('Project Deadline', 'Submit the project by the deadline', '2023-11-11T11:00:00Z'),
+    ('Grocery Shopping', 'Buy groceries for the week', '2023-11-12T12:00:00Z'),
+    ('Prepare Presentation', 'Prepare slides for the upcoming presentation', '2023-11-13T13:00:00Z'),
+    ('Visit Dentist', 'Go for a dental check-up', '2023-11-14T14:00:00Z'),
+    ('Client Meeting', 'Meet with the client to discuss project details', '2023-11-15T15:00:00Z'),
+    ('Yoga Class', 'Attend a yoga class at the local studio', '2023-11-16T16:00:00Z'),
+    ('Write Blog Post', 'Write a new post for your blog', '2023-11-17T17:00:00Z'),
+    ('Update Resume', 'Update your resume with recent job experiences', '2023-11-18T18:00:00Z'),
+    ('Car Maintenance', 'Take the car for regular maintenance', '2023-11-19T19:00:00Z');
+```
 
 # Architecture
 ## Sequence Diagrams
