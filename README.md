@@ -26,7 +26,7 @@ The next.js application will be running on `localhost:3000`
 
 ## Backend
 ### Using docker compose
-Just run
+Change active dir to `/backend` and just run
 ```bash
 docker-compose up -d
 ```
