@@ -12,5 +12,18 @@ services:
       - POSTGRES_DB=checkbox_tht
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      common:
+        aliases:
+          - postgresql
+  golang:
+    image: tht-cai-be
+    restart: no
+    ports:
+      - "3003:3003"
+    networks:
+      - common
 volumes:
   pgdata:
+networks:
+  common:

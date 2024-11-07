@@ -16,7 +16,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-const ConnectionString = "postgres://postgres:123@localhost:5432/checkbox_tht?sslmode=disable"
+const ConnectionString = "postgres://postgres:123@postgresql:5432/checkbox_tht?sslmode=disable"
 
 type ServiceHandler struct {
 	conn *pgxpool.Pool
