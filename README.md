@@ -131,6 +131,7 @@ As to improve the performance of the application, the list of the tasks is pagin
 
 ## Potential improvements (in the order of priority)
 - Refactor the Golang code by separating the route handler and extracting the model into different files.
+- Extracting variables and secrets (i.e. database url, backend API URL) into the environment variables and .env file.
 - Add unit tests to the Golang code.
 - Dockerize the Golang and Next.js application.
 - Better error handling in the Golang code and the Next.js backend code.
