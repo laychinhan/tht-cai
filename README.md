@@ -26,7 +26,12 @@ The next.js application will be running on `localhost:3000`
 
 ## Backend
 ### Using docker compose
-Change active dir to `/backend` and just run
+Change active dir to `/backend`.
+Build the image by running the following command:
+```bash
+docker build -t tht-cai-be .
+```
+and then run the docker compose
 ```bash
 docker-compose up -d
 ```
